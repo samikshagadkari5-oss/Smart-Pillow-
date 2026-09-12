@@ -1,0 +1,45 @@
+#include <Servo.h>
+
+Servo servo;
+
+int potPin = A0;
+int buttonPin = 2;
+int ledPin = 6;
+int tempPin = A1;
+
+void setup() {
+  servo.attach(9);
+  pinMode(buttonPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int pressure = analogRead(potPin);
+  int snore = digitalRead(buttonPin);
+
+  // TMP36 temperature calculation
+  int tempValue = analogRead(tempPin);
+  float voltage = tempValue * (5.0 / 1023.0);
+  float tempC = (voltage - 0.5) * 100;
+
+  // Head adjustment
+  if (pressure < 400) {
+    servo.write(120);
+  } else {
+    servo.write(90);
+  }
+
+  // Snore detection → LED ON
+  if (snore == HIGH) {
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
+  }
+
+  // Temperature logic (just print)
+  Serial.print("Temp: ");
+  Serial.println(tempC);
+
+  delay(500);
+}
